@@ -90,5 +90,4 @@ def main():
   print(pAIr.generate_text(50, 'end', seed='program'))
 
 if __name__ == '__main__':
-  main()
-
+main()
