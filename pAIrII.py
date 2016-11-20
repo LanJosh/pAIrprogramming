@@ -16,13 +16,29 @@ class Markov:
     self.list_ids = []
     self.size = size # [size of the structure chain, 
                      #  size of the expression chain]
-    self.program = ('program','begin','end')
-    self.cond1 = ('while','endwhile')
-    self.cond2 = ('if','else','endif')
-    self.declr = ('int',)
+    self.program = ['program','begin','end']
+    self.cond1 = ['while','endwhile']
+    self.cond2 = ['if','else','endif']
+    self.declr = ['int']
     self.oper = ['input','output','or']
     self.varlist = []
     self.text = [[], []]
+
+  def f2(self,seq): 
+    # order preserving unique elements of a list
+    checked = []
+    for e in seq:
+      if e not in checked:
+        checked.append(e)
+    return checked
+
+  def is_struct(self, string) :
+    r = re.split(r'[\s;]\s*', string.strip())
+    if len(r) == 0 : return False
+    if (r[0] in self.program) or (r[0] in self.cond1) or (r[0] in self.cond2) :
+      return True
+    else :
+      return False
 
   def is_program(self,string) :
     r = string.split()
@@ -49,24 +65,24 @@ class Markov:
       return False
 
   def is_declr(self, string) :
-    r = string.strip().split()
+    r = re.split(r'[\s;]\s*', string.strip())
     if len(r) == 0 : return False
     if r[0] == self.declr[0] :
       return True
     else :
       return False
 
-  def remo(self, str1, oper) : # remove the operators
+  def remo(self, str1, oper) : # replace the operators by tokens
     r = str1.strip().split()
     for i in range(len(oper)) :
       if oper[i] in r :
         str1 = str1.replace(oper[i], '#'+str(i)+'#')
     return str1
 
-  def resy(self,str1) : # remove the non-alphanumeric characters
-    s = ''.join(c for c in str1 if c.isalnum() or c.isspace()).split()
-    s = '#*#'.join(c for c in str1 if not c.isalnum() or c.isspace())
-    return s
+  def resy(self,str1) : # replace the alphabetic characters by single tokens
+    str1 = re.sub(r'[a-zA-Z]', r'W', str1)
+    str1 = re.sub('W+','W',str1)
+    return str1
 
   def generate_model(self, data):
     """
@@ -80,6 +96,7 @@ class Markov:
       byline = program.split('\n')
       flow = []
       for line in byline :
+        line = line.strip()
         if self.is_program(line) or self.is_declr(line) :
           continue
         if self.is_while(line) :
@@ -101,28 +118,32 @@ class Markov:
       """
       flow = []
       for line in byline :
-        if not ( self.is_program(line) or self.is_while(line) or self.is_if(line) or self.is_declr(line) ) :
+        line = line.strip()
+        if not ( line == "" or self.is_struct(line) or self.is_declr(line) ) :
           strpd = self.resy(self.remo(line, self.oper))
           flow.append(strpd)
         if self.is_declr(line) :
-          strpd = re.split(r'[;\s,]\s*',line)
+          strpd = re.split(r'[;\s,]',line)
           strpd.remove('int')
           self.list_ids.extend( [var for var in strpd if var] )
+
+      self.list_ids = self.f2(self.list_ids)
 
       if (self.size[1] <= len(flow)) :
         for i in range(len(flow) - self.size[1]):
           key = ()
           for j in range(self.size[1]):
             key += (flow[i+j],)
-            if key in self.model_words: 
-              self.model_words[key].append(flow[i+self.size[1]])
-            else:
-              self.model_words[key] = [flow[i+self.size[1]]]
+          if key in self.model_words: 
+            self.model_words[key].append(flow[i+self.size[1]])
+          else:
+            self.model_words[key] = [flow[i+self.size[1]]]
 
     if len( self.model_struct.keys() ) == 0:
       print('size = '+size+' too large for structures')
     if len( self.model_words.keys() ) == 0:
       print('size = '+size+' too large for words')
+    # print( self.model_words.keys() )
 
   def generate_struct(self, key):
     if key in self.model_struct:
@@ -133,21 +154,24 @@ class Markov:
 
   def generate_word(self, key, varlist):
     if key in self.model_words:
-      aword = random.choice(self.model_words[key])
-      aword.split('#')
-      for i in range(len(aword)) :
-        if aword[i] == '0' :
-          aword[i] = 'input'
-        elif aword[i] == '1' :
-          aword[i] = 'output'
-        elif aword[i] == '2' :
-          aword[i] = 'or'
-        elif aword[i] == '*' :
-          aword[i] = random.choice(varlist)
-      return aword
+      # print('key ',key,' is in')
+      s = random.choice(self.model_words[key])
+      aword = []
+      for i in range(len(s)) :
+        if s[i] == '0' :
+          aword.append('input')
+        elif s[i] == '1' :
+          aword.append('output')
+        elif s[i] == '2' :
+          aword.append('or')
+        elif s[i] == 'W' :
+          aword.append( random.choice(varlist) )
+        elif s[i] != '#' :
+          aword.append( s[i] )
+      return (' '.join(aword), s)
     else:
       # Reached a terminal in the Markov model
-      return ""
+      return "Key not found",""
 
   def generate_header(self, count):
     """
@@ -165,7 +189,7 @@ class Markov:
       key2 = random.choice(list(self.model_words.keys()))
     else:
       key = random.choice(self.model_struct.keys())
-      key2 = random.choice(self.model_words.keys())
+      key2 = random.choice(list(self.model_words.keys()))
     """
     Generate the structures and expressions inside
     """
@@ -183,11 +207,13 @@ class Markov:
         arbitrary = random.randint(i, count)
 
         for j in range(arbitrary-i) :
-          nextword = self.generate_word(key2, self.varlist)
+          nextword, orig_get  = self.generate_word(key2, self.varlist)
+          if orig_get == "" :
+            break
           self.text[1][nstrct-1].append(nextword)
           i += 1
-          key2 = nextword
-          print(key2)
+          key2 = (orig_get,)
+
       else :
         break
       key = astruct
@@ -211,9 +237,9 @@ class Markov:
     f.write('begin\n')
     for i in range(len(self.text[0])) :
       if (self.text[0][i] == 1) :
-        f.write(self.cond1[0])
+        f.write(self.cond1[0] + '\n')
       elif (self.text[0][i] == 2) :
-        f.write(self.cond2[0])
+        f.write(self.cond2[0] + '\n' )
 
       for j in range(len(self.text[1][i])) :
         f.write(self.text[1][i][j] + '\n')
@@ -257,4 +283,3 @@ def main():
 
 if __name__ == '__main__':
   main()
-

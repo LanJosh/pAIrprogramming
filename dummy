@@ -1,60 +1,38 @@
 program
-    int a;
-    int x;
-    int z;
     int isComposite;
     int z;
+    int isPrime;
+    int xY;
+    int x;
+    int p;
+    int y;
+    int i;
     int w;
-    int n;
-    int y;
-    int y;
     int b;
 begin
-while
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-endwhile
-while
-
-
-
-
-
-
-endwhile
 if
-
-
-
+isPrime : = input ;
+y : = input - output ;
+isComposite : = i + z ;
+x : = or * z + output - i ;
+x : = isPrime ;
+w : = 6 6 + w * ( 8 4 - p * or ) - 3 or + b ;
+output   z ;
+x : = y + output ;
+output   y ;
+output   input - isComposite ;
+input   isPrime ;
+y : = or ;
+isComposite : = w ;
+b : = 6 6 + isPrime * ( 8 4 - w * or ) - 3 or + isPrime ;
+output   z ;
+output   input - xY ;
+input   isPrime ;
+w : = 8 ;
+z : = input ;
+isComposite : = isPrime - output ;
+i : = input ;
+p : = b - output ;
 else
 endif
 end
