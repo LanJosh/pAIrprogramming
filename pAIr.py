@@ -4,6 +4,7 @@ A Markov model
 """
 
 import random
+import os
 
 class Markov:
   """ The Markov model to pAIr uses to generate new programs
@@ -50,12 +51,12 @@ class Markov:
     i = 0
     text = ""
     for word in list(key):
-      text += " " + word
+      text += word
     while (True):
       word = self.generate_word(key)
       if word == "" or word == end:
         return text + " " + word
-      text += word + " "
+      text += " " + word 
       key = ((list(key))[1:]) 
       key.append(word)
       key = tuple(key)
@@ -86,7 +87,7 @@ def main():
   data.append(human_program)
   pAIr = Markov(1)
   pAIr.generate_model(data) 
-  print(y.generate_text(50, 'end', seed='program'))
+  print(pAIr.generate_text(50, 'end', seed='program'))
 
 if __name__ == '__main__':
   main()

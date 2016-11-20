@@ -1,0 +1,18 @@
+program
+  int x,y;
+  int z,w;
+begin
+  input x;
+  w:=x;
+  input y;
+  w:=w+y;
+  input z;
+  w:=w+z;
+  if w<10 or !(!(x=2)) then
+    x:=x+y;
+  else 
+    y:=x+y;
+  endif;
+  output x;
+  output y;
+end

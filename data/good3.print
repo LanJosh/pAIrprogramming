@@ -1,0 +1,12 @@
+program
+  int n,val,i;
+begin
+  input n;
+  val:=8;
+  i:=0;
+  while i<n begin
+    output val;
+    i:=i+1;
+    val:=val*10+8;
+  endwhile;
+end

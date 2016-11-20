@@ -1,0 +1,11 @@
+program
+  int x,y,z;
+begin
+  input x;
+  if 5<x then
+    y:=6;
+  else 
+    z:=5;
+  endif;
+  output z;
+end

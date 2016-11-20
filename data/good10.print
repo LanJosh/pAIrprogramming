@@ -1,0 +1,27 @@
+program
+  int n;
+  int a,b;
+  int isComposite;
+begin
+  input n;
+  while !(n=0) begin
+    if 1<n then
+      a:=2;
+      b:=n;
+      isComposite:=0;
+      while a<=b-1 begin
+        while n<a*b begin
+          b:=b-1;
+        endwhile;
+        if a*b=n then
+          isComposite:=1;
+        endif;
+        a:=a+1;
+      endwhile;
+      if isComposite=0 then
+        output n;
+      endif;
+    endif;
+    input n;
+  endwhile;
+end

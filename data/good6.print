@@ -1,0 +1,11 @@
+program
+  int x,y;
+  int z,w;
+  int p;
+begin
+  input x;
+  input y;
+  input z;
+  w:=(0-x)+y*z-y-z;
+  output w;
+end

@@ -1,0 +1,15 @@
+program
+  int x,y;
+  int z,w;
+begin
+  input x;
+  input y;
+  input z;
+  w:=x+y+z;
+  if w<5+6 or !(!(x=2)) then
+    x:=100;
+  else 
+    x:=6688;
+  endif;
+  output x;
+end
