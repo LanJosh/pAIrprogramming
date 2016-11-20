@@ -20,7 +20,7 @@ class Markov:
     ```size``` is the number of words to look back at
     """
     for program in data:
-      vocab = program.split()
+      vocab = program.split('\n')
       if (self.size > len(vocab)):
         continue
       for i in range(len(vocab) - self.size):
@@ -56,7 +56,7 @@ class Markov:
       word = self.generate_word(key)
       if word == "" or word == end:
         return text + " " + word
-      text += " " + word 
+      text += " " + word
       key = ((list(key))[1:]) 
       key.append(word)
       key = tuple(key)
@@ -84,7 +84,7 @@ def main():
   exp = Experience('./data/')
   data = exp.get_experience()
   human_program = input('Enter the program you want to run: ')
-  data.append(human_program)
+  #data.append(human_program)
   pAIr = Markov(1)
   pAIr.generate_model(data) 
   print(pAIr.generate_text(50, 'end', seed='program'))
